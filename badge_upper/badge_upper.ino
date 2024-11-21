@@ -179,11 +179,6 @@ void setup()
   pinMode(LED_PIN_3, OUTPUT);
   pinMode(LED_PIN_4, OUTPUT);
 
-  digitalWrite(LED_PIN_1, EEPROM.read(eepromAddresses[0]) ? HIGH : LOW);
-  digitalWrite(LED_PIN_2, EEPROM.read(eepromAddresses[1]) ? HIGH : LOW);
-  digitalWrite(LED_PIN_3, EEPROM.read(eepromAddresses[2]) ? HIGH : LOW);
-  digitalWrite(LED_PIN_4, EEPROM.read(eepromAddresses[3]) ? HIGH : LOW);
-
   for(int i = 9; i >= 6; i--) {
     digitalWrite(i,HIGH);
     delay(100);
@@ -194,6 +189,11 @@ void setup()
     delay(100);
     digitalWrite(i,LOW);
   }
+
+  digitalWrite(LED_PIN_1, EEPROM.read(eepromAddresses[0]) ? HIGH : LOW);
+  digitalWrite(LED_PIN_2, EEPROM.read(eepromAddresses[1]) ? HIGH : LOW);
+  digitalWrite(LED_PIN_3, EEPROM.read(eepromAddresses[2]) ? HIGH : LOW);
+  digitalWrite(LED_PIN_4, EEPROM.read(eepromAddresses[3]) ? HIGH : LOW);
 }
 
 bool main_page = false;
