@@ -216,6 +216,17 @@ void loop() {
         Serial.print(c);
       }
     }
+    else if (input == "listerine") {
+      for (int i = 0; i < 3; i++) {
+        Serial.println();
+      }
+      Serial.println("COOOOOL MINTTTTTT!!!!!");
+      delay(1000);
+      for (int i = 0; i < sizeof(clear) - 1; i++) {
+        char c = pgm_read_byte(&clear[i]);
+        Serial.print(c);
+      }
+    }
     //dyhs 입력하여 로직 실행
     else if (input == "dyhs") {
       for (int i = 0; i < 3; i++) {
