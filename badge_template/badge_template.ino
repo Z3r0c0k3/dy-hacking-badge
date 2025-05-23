@@ -5,14 +5,14 @@
 #define LED_PIN_2 8
 #define LED_PIN_3 7
 #define LED_PIN_4 6
-#define START_STR "dyhs"
+#define START_STR "START_GAME"
 #define NUM_PROBLEMS 4
-#define LINE_SPACING 3
-#define LONG_SPACING 10
-#define VERY_LONG_SPACING 18
+#define LINE_SPACING 2
+#define LONG_SPACING 13
+#define VERY_LONG_SPACING 21
 
 // 문제별 정답 (쉽게 변경 가능)
-const char *ANSWERS[NUM_PROBLEMS] = {"4", "4", "1", "3"};
+const char *ANSWERS[NUM_PROBLEMS] = {"FLAG{1}", "FLAG{2}", "FLAG{3}", "FLAG{4}"};
 
 // 각 문제에 해당하는 LED 핀
 const int LED_PINS[NUM_PROBLEMS] = {LED_PIN_1, LED_PIN_2, LED_PIN_3, LED_PIN_4};
@@ -21,9 +21,7 @@ const int LED_PINS[NUM_PROBLEMS] = {LED_PIN_1, LED_PIN_2, LED_PIN_3, LED_PIN_4};
 const int eepromAddresses[NUM_PROBLEMS] = {0, 1, 2, 3};
 
 // 대용량 문자열(출력용 아스키아트)을 프로그램 메모리에 저장
-const char clear[] PROGMEM;
 const char intro[] PROGMEM;
-const char gameRule[] PROGMEM;
 const char p1[] PROGMEM;
 const char p2[] PROGMEM;
 const char p3[] PROGMEM;
@@ -155,7 +153,7 @@ void handleProblem(int problemNumber)
       blinkLED(ledPin, 3);
       EEPROM.update(eepromAddresses[index], 1);
       Serial.println("정답입니다!! 정답 갯수:" + String(sumEEPROM()) +
-                     "/4\n\'dyhs\'를 입력해서 처음으로 돌아가주세요.");
+                     "/4\n\'START_GAME\'을 입력해서 처음으로 돌아가주세요.");
       printEmptyLines(VERY_LONG_SPACING);
       delay(1000);
 
@@ -168,9 +166,9 @@ void handleProblem(int problemNumber)
     else if (answer.equals("exit"))
     {
       // 종료 처리
-      Serial.println("\n게임에서 나가기를 선택했습니다. \'dyhs\'를 입력해서 처음으로 돌아가주세요.");
+      Serial.println("\n게임에서 나가기를 선택했습니다. \'START_GAME\'를 입력해서 처음으로 돌아가주세요.");
       delay(1500);
-      printProgmemString(clear);
+      printProgmemString(VERY_LONG_SPACING);
       break;
     }
     else
@@ -208,6 +206,20 @@ void setup()
   {
     digitalWrite(LED_PIN_1, EEPROM.read(eepromAddresses[i]) ? HIGH : LOW);
   }
+  // 시리얼 연결 시, welcome 메시지 출력
+  if (Serial)
+  {
+    printEmptyLines(LINE_SPACING);
+    Serial.println("게임을 시작합니다. \'help\'를 입력하여 도움말을 확인하세요.");
+    delay(1000);
+    printProgmemString(intro);
+    printEmptyLines(LINE_SPACING);
+    // 성공 메시지 출력
+    if (allProblemsCompleted())
+    {
+      showCompletionMessage();
+    }
+  }
 }
 
 void loop()
@@ -233,13 +245,12 @@ void loop()
       resetEEPROM();
       Serial.println("EEPROM RESET SUCCESS!!");
       delay(1000);
-      printProgmemString(clear);
+      printEmptyLines(VERY_LONG_SPACING);
     }
     // 게임 시작
     else if (input == START_STR)
     {
       printEmptyLines(LINE_SPACING);
-      Serial.println("게임을 시작합니다. \'help\'를 입력하여 도움말을 확인하세요.");
       delay(1000);
       printProgmemString(intro);
       printEmptyLines(LINE_SPACING);
@@ -254,7 +265,40 @@ void loop()
     // 화면 지우기
     else if (input == "clear")
     {
-      printProgmemString(clear);
+      printEmptyLines(VERY_LONG_SPACING);
+    }
+    // 풀이한 문제 확인
+    else if (input == "status")
+    {
+      printEmptyLines(LINE_SPACING);
+      Serial.println("문제를 풀면 O, 풀지 않았다면 X로 표시됩니다.\n");
+      Serial.println("       < 문제 풀이 상태 >     ");
+      Serial.println("  +-----+-----+-----+-----+");
+      Serial.println("  |  1  |  2  |  3  |  4  |");
+      Serial.println("  +-----+-----+-----+-----+");
+      Serial.print("  |");
+      for (int i = 0; i < NUM_PROBLEMS; i++)
+      {
+        if (statusEEPROM(i))
+        {
+          Serial.print("  O  |"); // 해결된 문제는 O
+        }
+        else
+        {
+          Serial.print("  X  |"); // 미해결 문제는 X
+        }
+      }
+      Serial.println("\n  +-----+-----+-----+-----+");
+
+      if (allProblemsCompleted())
+      {
+        printEmptyLines(LINE_SPACING);
+        showCompletionMessage();
+      }
+      else
+      {
+        printEmptyLines(LONG_SPACING);
+      }
     }
     // 문제 선택 (1-4)
     else if (input.length() == 1 && input[0] >= '1' && input[0] <= '4')

@@ -1,10 +1,21 @@
 # DYHS Hacking Badge
 
+## Thanks to
+
+1. badge_example 문제 개발진 - 김민수
+   - (해킹 팀 'VOID' 부팀장 | 덕영고등학교 정보보호 동아리 'MAKE@Infosec' 부장)
+2. badge_old 문제 개발진 - 박세진
+   - (해킹 팀 'VOID' 팀원 | 덕영고등학교 정보보호 동아리 'MAKE@Infosec' 팀원)
+
 ## 개요
 
 이 프로젝트는 실제 큰 규모의 CTF 본선 같은곳에서 배포하는 뱃지 해킹을 모방하여 만들기 위한 프로젝트입니다.
 
 간단하게 문제를 풀이하면 문제 index에 맞는 LED가 점등 하고, 전체 풀이 시 LED 애니메이션으로 표현됩니다.
+
+이 외에도 시리얼 모니터를 통해 Shell을 모방한 인터페이스를 제공하여, 사용자가 문제를 선택하고 풀이 상태를 확인할 수 있도록 구현하였습니다.
+
+[badge_example.ino](/badge_example/badge_example.ino) 파일을 참고하여 아스키 아트 예시를 포함한 문제 설명을 확인할 수 있습니다.
 
 ## 하드웨어 요구사항
 
@@ -29,6 +40,7 @@
 - `clear`: 화면 지우기
 - `1`~`4`: 해당 번호의 문제 선택
 - `exit`: 현재 문제에서 나가기
+- `status`: 현재 문제 풀이 상태 확인
 
 ## 기술적 특징
 
@@ -55,7 +67,7 @@
 ### 시리얼 시작 문자열 변경
 
 ```cpp
-#define START_STR "dyhs"
+#define START_STR "START_GAME"
 ```
 
 게임 시작하기 위해 시리얼 시작 문자열을 변경할 수 있습니다.
@@ -63,12 +75,12 @@
 ### 문제 및 정답 변경
 
 ```cpp
-const char *ANSWERS[NUM_PROBLEMS] = {"4", "4", "1", "3"};
+const char *ANSWERS[NUM_PROBLEMS] = {"FLAG{1}", "FLAG{2}", "FLAG{3}", "FLAG{4}"};
 ```
 
 각 인덱스에 해당하는 문제의 정답을 변경할 수 있습니다.
 
-### 문제 내용 변경
+### 문제 내용 (아스키 아트) 변경
 
 ```cpp
 const char clear[] PROGMEM;
@@ -82,6 +94,8 @@ const char allSolve[] PROGMEM;
 ```
 
 문제 설명, 시작 화면, 게임 설명, 전체 풀이 축하 아스키코드 등을 저장합니다. 이 부분은 아스키아트를 포함한 큰 문자열이 주로 저장됩니다.
+
+위 변수의 내용을 어떻게 넣어야 하는지 모르겠다면 [badge_example.ino](/badge_example/badge_example.ino) 파일을 참고하세요. (이 파일은 아스키아트 예시를 포함하고 있습니다.)
 
 ### LED 핀 변경
 
@@ -106,7 +120,7 @@ const char allSolve[] PROGMEM;
 
 1. 아두이노 보드에 코드 업로드
 2. 시리얼 모니터 열기 (4800 baud 설정)
-3. `dyhs` 입력하여 게임 시작
+3. `GAME_START` 입력하여 게임 시작
 4. `help` 입력으로 게임 방법 확인
 5. 번호(1-4)를 입력하여 문제 풀이 시작
 
